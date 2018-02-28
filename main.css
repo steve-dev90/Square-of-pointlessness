@@ -1,0 +1,11 @@
+.main-section{
+    height: 400px;
+} 
+
+#animate {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 200px;
+    background: red;
+}
