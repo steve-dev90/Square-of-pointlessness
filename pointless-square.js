@@ -6,36 +6,26 @@ var Box = function() {
     var duration = 3000
     var size = 50
     var element = document.getElementById('animate')
-    var radius = 0
+    var distFromTop = 200
 
-    this.getDuration = function () {
-        return duration
-    }
+    this.getDuration = function () { return duration }
+    this.getSize = function () { return size }
+    this.getElement = function () { return element }  
+    this.getDistFromTop = function () { return distFromTop}
 
-    this.getSize = function () {
-        return size
-    }
-
-    this.getElement = function () {
-        return element
-    } 
     
-    this.getRadius = function () {
-        return radius
-    }     
-    
-    this.setDuration = function (newDuration) {
-        duration = newDuration
-    }
+    this.setDuration = function (newDuration) { duration = newDuration }
+    this.setSize = function (newSize) { size = newSize }
+    this.setDistFromTop = function (newDistFromTop) { distFromTop = newDistFromTop } 
 
-    this.setSize = function (newSize) {
-        size = newSize
-    }
+}
 
-    this.setRadius = function (newRadius) {
-        radius = newRadius
-    }    
+var Canvas = function() {
+    var height = document.getElementsByClassName('row')[1].offsetHeight
+    var width = document.getElementsByClassName('row')[1].offsetWidth
 
+    this.getWidth = function () { return width}
+    this.getHeight = function () { return height}
 }
 
 document.addEventListener('DOMContentLoaded', start)
@@ -44,11 +34,13 @@ function start () {
     var boxElement = document.getElementById('animate')
 
     var boxProps = new Box()
+    var canvasProps = new Canvas()
     
     buttonEventListensers('speed', function(event) {changeSpeed(event, boxProps)})
     buttonEventListensers('size', function(event) {changeSize(event, boxProps)})
-    buttonEventListensers('point', function(event) {changePoint(event, boxProps)})
+    buttonEventListensers('height', function(event) {changePosition(event, boxProps, canvasProps)})
     buttonEventListensers('colour', function() {changeColour(boxProps)})
+
 
     requestAnimationFrame(function(timestamp){
         starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
@@ -93,17 +85,17 @@ function changeSize(event, elProp) {
   //console.log('Click : ')  
 }
 
-function changePoint(event, elProp) {
+function changePosition(event, elProp, backProp) {
   var button = event.target.innerText   
-  var increment = 2
-  var boxRadius = elProp.getRadius()
+  var increment = backProp.getHeight()/20
+  var boxDistFromTop = elProp.getDistFromTop()
   if (button == '+') {
-    boxRadius = Math.min(elProp.getSize(), boxRadius + increment)
+    boxDistFromTop = Math.min(backProp.getHeight() - elProp.getSize(), boxDistFromTop + increment)
   } else {
-    boxRadius = Math.max(0,boxRadius - increment)  
+    boxDistFromTop = Math.max(0,boxDistFromTop - increment)  
   }    
-  elProp.setRadius(boxRadius) 
-  elProp.getElement().style.borderRadius = boxRadius + 'px'
+  elProp.setDistFromTop(boxDistFromTop) 
+  elProp.getElement().style.top = boxDistFromTop + 'px'
   //console.log('Click : ')  
 }
 

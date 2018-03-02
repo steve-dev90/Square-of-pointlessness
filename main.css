@@ -1,5 +1,6 @@
-.main-section{
+#canvas{
     height: 400px;
+    width: auto;
 } 
 
 #animate {
