@@ -48,6 +48,7 @@ function start () {
     buttonEventListensers('speed', function(event) {changeSpeed(event, boxProps)})
     buttonEventListensers('size', function(event) {changeSize(event, boxProps)})
     buttonEventListensers('point', function(event) {changePoint(event, boxProps)})
+    buttonEventListensers('colour', function() {changeColour(boxProps)})
 
     requestAnimationFrame(function(timestamp){
         starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
@@ -74,7 +75,7 @@ function changeSpeed(event, elProp) {
   } 
   
   elProp.setDuration(boxDuration) 
-  console.log('Click : ' + boxDuration)  
+  //console.log('Click : ' + boxDuration)  
 }
 
 function changeSize(event, elProp) {
@@ -89,7 +90,7 @@ function changeSize(event, elProp) {
   elProp.setSize(boxSize) 
   elProp.getElement().style.width = boxSize + 'px'
   elProp.getElement().style.height = boxSize + 'px'
-  console.log('Click : ')  
+  //console.log('Click : ')  
 }
 
 function changePoint(event, elProp) {
@@ -103,10 +104,15 @@ function changePoint(event, elProp) {
   }    
   elProp.setRadius(boxRadius) 
   elProp.getElement().style.borderRadius = boxRadius + 'px'
-  console.log('Click : ')  
+  //console.log('Click : ')  
 }
 
-
+function changeColour(elProp) {
+    var col = ['red','blue','grey','green','black']
+    var colour = col[Math.floor(Math.random()*5)]
+    elProp.getElement().style.backgroundColor = colour
+    console.log('Click : '+colour)  
+  }
 
 function moveit(timestamp, element, distance, elProp) {
     //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date:
