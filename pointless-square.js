@@ -27,10 +27,7 @@ function start () {
 
     boxProps = new Box()
     
-    buttonEventListensers('outer-circle', function() {increaseSquareSpeed(boxProps)})
-
-    // var buttons = document.getElementsByClassName('outer-circle')
-    // buttons[0].addEventListener('click',function() {increaseSquareSpeed(boxProps)})
+    buttonEventListensers('speed', function(event) {increaseSpeed(event,boxProps)})
 
     requestAnimationFrame(function(timestamp){
         starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
@@ -42,17 +39,22 @@ function start () {
 function buttonEventListensers(buttonClass,processFunction) {
     var buttons = document.getElementsByClassName(buttonClass)
     for (var i = 0; i < buttons.length; i++) {
-      console.log('hello')  
       buttons[i].addEventListener('click',processFunction)
     }  
   }
 
-function increaseSquareSpeed(elProp) { 
+function increaseSpeed(event,elProp) {
+  var button = event.target.innerText   
   var increment = 250
-  var boxDuration = boxProps.getDuration()   
-  boxDuration = Math.max(750,boxDuration-increment) 
+  var boxDuration = boxProps.getDuration() 
+  if (button == '+') {
+    boxDuration = Math.max(750,boxDuration-increment)
+  } else {
+    boxDuration = Math.min(4000,boxDuration+increment)  
+  } 
+   
   elProp.setDuration(boxDuration) 
-  console.log('Click duration: ' + boxDuration)  
+  console.log('Click : ' + boxDuration)  
 }
 
 
