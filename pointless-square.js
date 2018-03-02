@@ -5,6 +5,8 @@ var starttime
 var Box = function() {
     var duration = 3000
     var size = 50
+    var element = document.getElementById('animate')
+    var radius = 0
 
     this.getDuration = function () {
         return duration
@@ -13,10 +15,26 @@ var Box = function() {
     this.getSize = function () {
         return size
     }
+
+    this.getElement = function () {
+        return element
+    } 
+    
+    this.getRadius = function () {
+        return radius
+    }     
     
     this.setDuration = function (newDuration) {
         duration = newDuration
     }
+
+    this.setSize = function (newSize) {
+        size = newSize
+    }
+
+    this.setRadius = function (newRadius) {
+        radius = newRadius
+    }    
 
 }
 
@@ -25,9 +43,11 @@ document.addEventListener('DOMContentLoaded', start)
 function start () {
     var boxElement = document.getElementById('animate')
 
-    boxProps = new Box()
+    var boxProps = new Box()
     
-    buttonEventListensers('speed', function(event) {increaseSpeed(event,boxProps)})
+    buttonEventListensers('speed', function(event) {changeSpeed(event, boxProps)})
+    buttonEventListensers('size', function(event) {changeSize(event, boxProps)})
+    buttonEventListensers('point', function(event) {changePoint(event, boxProps)})
 
     requestAnimationFrame(function(timestamp){
         starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
@@ -43,19 +63,49 @@ function buttonEventListensers(buttonClass,processFunction) {
     }  
   }
 
-function increaseSpeed(event,elProp) {
+function changeSpeed(event, elProp) {
   var button = event.target.innerText   
   var increment = 250
-  var boxDuration = boxProps.getDuration() 
+  var boxDuration = elProp.getDuration() //Changed from boxProps
   if (button == '+') {
     boxDuration = Math.max(750,boxDuration-increment)
   } else {
-    boxDuration = Math.min(4000,boxDuration+increment)  
+    boxDuration = Math.min(6000,boxDuration+increment)  
   } 
-   
+  
   elProp.setDuration(boxDuration) 
   console.log('Click : ' + boxDuration)  
 }
+
+function changeSize(event, elProp) {
+  var button = event.target.innerText   
+  var increment = 2
+  var boxSize = elProp.getSize()
+  if (button == '+') {
+    boxSize = Math.min(70, boxSize + increment)
+  } else {
+    boxSize = Math.max(20,boxSize - increment)  
+  }    
+  elProp.setSize(boxSize) 
+  elProp.getElement().style.width = boxSize + 'px'
+  elProp.getElement().style.height = boxSize + 'px'
+  console.log('Click : ')  
+}
+
+function changePoint(event, elProp) {
+  var button = event.target.innerText   
+  var increment = 2
+  var boxRadius = elProp.getRadius()
+  if (button == '+') {
+    boxRadius = Math.min(elProp.getSize(), boxRadius + increment)
+  } else {
+    boxRadius = Math.max(0,boxRadius - increment)  
+  }    
+  elProp.setRadius(boxRadius) 
+  elProp.getElement().style.borderRadius = boxRadius + 'px'
+  console.log('Click : ')  
+}
+
 
 
 function moveit(timestamp, element, distance, elProp) {
