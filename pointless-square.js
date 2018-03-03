@@ -1,31 +1,32 @@
 //Request animation blue print from http://www.javascriptkit.com/javatutors/requestanimationframe.shtml
 
 var starttime
+var col = ['red','blue','violet','green','cyan','orange','yellow','azure','crimson']
 
 var Box = function() {
     var duration = 3000
     var size = 50
     var element = document.getElementById('animate')
     var distFromTop = 200
+    var noOfColours = 0
 
     this.getDuration = function () { return duration }
     this.getSize = function () { return size }
     this.getElement = function () { return element }  
     this.getDistFromTop = function () { return distFromTop}
+    this.getNoOfColours = function () { return noOfColours}
 
     
     this.setDuration = function (newDuration) { duration = newDuration }
     this.setSize = function (newSize) { size = newSize }
     this.setDistFromTop = function (newDistFromTop) { distFromTop = newDistFromTop } 
+    this.setNoOfColours = function (newNoOfColours) { noOfColours = newNoOfColours}
 
 }
 
 var Canvas = function() {
-    var height = document.getElementsByClassName('row')[1].offsetHeight
-    var width = document.getElementsByClassName('row')[1].offsetWidth
-
-    this.getWidth = function () { return width}
-    this.getHeight = function () { return height}
+    this.getWidth = function () { return document.getElementsByClassName('row')[1].offsetWidth}
+    this.getHeight = function () { return document.getElementsByClassName('row')[1].offsetHeight}
 }
 
 document.addEventListener('DOMContentLoaded', start)
@@ -39,12 +40,12 @@ function start () {
     buttonEventListensers('speed', function(event) {changeSpeed(event, boxProps)})
     buttonEventListensers('size', function(event) {changeSize(event, boxProps)})
     buttonEventListensers('height', function(event) {changePosition(event, boxProps, canvasProps)})
-    buttonEventListensers('colour', function() {changeColour(boxProps)})
+    buttonEventListensers('colour', function() {changeColourNum(event, boxProps)})
 
 
     requestAnimationFrame(function(timestamp){
         starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
-        moveit(timestamp, boxElement, 500, boxProps) 
+        moveit(timestamp, boxElement, canvasProps, boxProps) 
     })
 
 }
@@ -99,43 +100,57 @@ function changePosition(event, elProp, backProp) {
   //console.log('Click : ')  
 }
 
-function changeColour(elProp) {
-    var col = ['red','blue','grey','green','black']
-    var colour = col[Math.floor(Math.random()*5)]
-    elProp.getElement().style.backgroundColor = colour
-    console.log('Click : '+colour)  
+function changeColourNum(event, elProp) {
+
+    var button = event.target.innerText 
+    var numColours = elProp.getNoOfColours() 
+
+    console.log('Click : ' ) 
+
+    button == '+' ? Math.min(col.length, numColours ++) : 
+                    Math.max(0, numColours --) 
+    elProp.setNoOfColours(numColours)
+
+    //changeColour(numColours, elProp)
   }
 
-function moveit(timestamp, element, distance, elProp) {
+function changeColour(numColours, elProp) {
+    elProp.getElement().style.backgroundColor = col[Math.floor(Math.random()*numColours)]
+}
+
+function moveit(timestamp, element, canProp, elProp) {
     //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date:
     var timestamp = timestamp || new Date().getTime()
     var runtime = timestamp - starttime
     var duration = elProp.getDuration()
+    var distance = canProp.getWidth() - elProp.getSize()
     //console.log('moveit duration: ' + duration)
 
     var progress = runtime / duration
     progress = Math.min(progress, 1)
-    element.style.left = (distance * progress).toFixed(2) + 'px' 
-    //console.log(element.style.left)
+    element.style.left = (distance * progress).toFixed(2) + 'px'
+    changeColour(elProp.getNoOfColours(),elProp) 
+    console.log(canProp.getWidth())
 
     if (runtime < duration){ // if duration not met yet
         requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
-            moveit(timestamp, element, distance, elProp)
+            moveit(timestamp, element, canProp, elProp)
         }) 
     } else {
         requestAnimationFrame(function(timestamp){
             starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
-            transout(timestamp, element, distance, elProp) 
+            transout(timestamp, element, canProp, elProp) 
         })    
     }
 }
 
-function transout(timestamp, element, startpos, elProp) {
+function transout(timestamp, element, canProp, elProp) {
     //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date:
     var timestamp = timestamp || new Date().getTime()
     var runtime = timestamp - starttime
     var delta, x, y
     var size = elProp.getSize()
+    var startpos = canProp.getWidth() - elProp.getSize()
     var duration = elProp.getDuration()*(size/startpos)
     var progress = runtime / duration
     progress = Math.min(progress, 1)
@@ -146,23 +161,24 @@ function transout(timestamp, element, startpos, elProp) {
     element.style.left = x +'px'
     if (runtime < duration){ // if duration not met yet
         requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
-            transout(timestamp, element, startpos, elProp)
+            transout(timestamp, element, canProp, elProp)
         }) 
     }  else {
         requestAnimationFrame(function(timestamp){
             element.style.left = 0
             starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
-            transin(timestamp, element, elProp) 
+            transin(timestamp, element, canProp, elProp) 
         })    
     }  
 }
 
-function transin(timestamp, element, elProp) {
+function transin(timestamp, element, canProp, elProp) {
     //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date:
     var timestamp = timestamp || new Date().getTime()
     var runtime = timestamp - starttime
     var size = elProp.getSize()
-    var duration = elProp.getDuration()*(size/500) //CHANGE
+    var canvasWidth = canProp.getWidth()
+    var duration = elProp.getDuration()*(size/canvasWidth) //CHANGE
    
     var progress = runtime / duration
     progress = Math.min(progress, 1)
@@ -171,12 +187,12 @@ function transin(timestamp, element, elProp) {
 
     if (runtime < duration){ // if duration not met yet
         requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
-            transin(timestamp, element, elProp)
+            transin(timestamp, element, canProp, elProp)
         }) 
     }  else {
         requestAnimationFrame(function(timestamp){
             starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
-            moveit(timestamp, element, 500, elProp) 
+            moveit(timestamp, element, canProp, elProp) 
         })
     }
     
